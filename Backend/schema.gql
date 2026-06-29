@@ -1,0 +1,44 @@
+# Update this in your Data Connect > Schema section
+# OR save this file and run `firebase deploy --only dataconnect`
+
+type Department @table {
+  departmentName: String!
+  managerName: String
+}
+
+type Employee @table {
+  name: String!
+  email: String!
+  position: String!
+  phoneNumber: String
+  joinDate: Date
+  department: Department
+}
+
+type Shift @table {
+  employee: Employee!
+  hoursOfShift: Float!
+  location: String!
+  gracePeriod: Int
+}
+
+type AttendanceRecord @table {
+  employee: Employee!
+  date: Date!
+  clockInTime: String    # Changed from Timestamp to String
+  clockOutTime: String   # Changed from Timestamp to String
+  status: String!
+  remarks: String
+  locationCoordinates: String
+  verificationImageUrl: String
+}
+
+type MonthlyReport @table {
+  employee: Employee!
+  month: Int!
+  year: Int!
+  totalPresent: Int!
+  totalAbsent: Int!
+  totalLate: Int!
+  totalOvertimeHours: Float
+}
