@@ -21,9 +21,10 @@ interface StatusSliderProps {
   onComplete: () => void;
   isActive: boolean;
   disabled?: boolean;
+  customLabel?: string;
 }
 
-export const StatusSlider: React.FC<StatusSliderProps> = ({ onComplete, isActive, disabled }) => {
+export const StatusSlider: React.FC<StatusSliderProps> = ({ onComplete, isActive, disabled, customLabel }) => {
   const translateX = useSharedValue(0);
 
   useEffect(() => {
@@ -85,7 +86,13 @@ export const StatusSlider: React.FC<StatusSliderProps> = ({ onComplete, isActive
     <View style={[styles.container, disabled && !isActive && styles.disabled]}>
       <View style={styles.sliderTrack}>
         <Animated.Text style={[styles.sliderText, animatedTextStyle]}>
-          {isActive ? 'Geser untuk Pulang' : (disabled ? 'Mulai Bekerja (Terkunci)' : 'Geser untuk Mulai')}
+          {isActive
+            ? 'Geser untuk Pulang'
+            : (customLabel
+                ? (disabled ? `${customLabel} (Kunci)` : customLabel)
+                : (disabled ? 'Mulai Bekerja (Kunci)' : 'Geser untuk Mulai')
+              )
+          }
         </Animated.Text>
 
 

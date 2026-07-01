@@ -39,9 +39,22 @@ export default function LoginScreen() {
         const cleanJoinDate = rawJoinDate.replace(/-/g, '');
 
         if (password === cleanJoinDate) {
-          // Login Berhasil, simpan session
-          await login(data);
-          Alert.alert('Berhasil', `Selamat datang, ${data.name}`);
+          // 1. Cek apakah karyawan masih bekerja hari ini (belum absen pulang)
+          const todayStr = new Date().toISOString().split('T')[0];
+          const { data: attendanceData } = await supabase
+            .from('attendance_record')
+            .select('id')
+            .eq('employee_id', data.id)
+            .eq('date', todayStr)
+            .is('clock_out_time', null)
+            .limit(1);
+
+          // Jika ada baris yang clock_out_time-nya NULL, berarti status masih bekerja (Active)
+          const isUserActive = attendanceData && attendanceData.length > 0;
+
+          // 2. Simpan session (termasuk status aktifnya)
+          await login({ ...data, isUserActive });
+          Alert.alert('Berhasil', `Selamat datang kembali, ${data.name}`);
         } else {
           Alert.alert('Gagal', 'Password (Tanggal Masuk) salah');
         }
