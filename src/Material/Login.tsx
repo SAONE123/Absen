@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, KeyboardAvoidingView, Platform, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { supabase } from '../firebase/firebaseConfig';
 import { useEmployee } from '@/hooks/useEmployee';
 
@@ -26,12 +27,15 @@ export default function LoginScreen() {
         .from('employee')
         .select('id, name, join_date')
         .eq('name', name.trim())
-        .single();
+        .maybeSingle(); // Gunakan maybeSingle agar tidak error jika data 0
 
       if (error) {
         console.error("Supabase Query Error:", error);
-        Alert.alert('Gagal', 'Karyawan tidak ditemukan atau terjadi kesalahan database');
-      } else if (data) {
+        Alert.alert('Gagal', 'Terjadi kesalahan database');
+      } else if (!data) {
+        console.log(`❌ Karyawan "${name.trim()}" tidak ditemukan.`);
+        Alert.alert('Gagal', 'Nama karyawan tidak ditemukan. Periksa kembali ejaan Anda (Nama harus persis sama).');
+      } else {
         console.log("✅ Data ditemukan:", data);
 
         // 2. Verifikasi Password (Join Date tanpa -)
@@ -55,8 +59,11 @@ export default function LoginScreen() {
           // 2. Simpan session (termasuk status aktifnya)
           await login({ ...data, isUserActive });
           Alert.alert('Berhasil', `Selamat datang kembali, ${data.name}`);
+
+          // 3. Navigasi manual ke tabs
+          router.replace('/(tabs)/attendance');
         } else {
-          Alert.alert('Gagal', 'Password (Tanggal Masuk) salah');
+          Alert.alert('Gagal', 'Password salah');
         }
       }
     } catch (error: any) {

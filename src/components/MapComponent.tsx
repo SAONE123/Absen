@@ -4,11 +4,11 @@ import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 
 const FACTORY_LOCATIONS = [
-  { id: 1, lat: -6.2325, lon: 106.5449 },
+  { id: 1, lat: -6.177857, lon: 106.629814 },
   { id: 2, lat: -6.1756, lon: 106.6299 },
 ];
 
-const RADIUS_METERS = 1000;
+const RADIUS_METERS = 100;
 
 interface MapComponentProps {
   onLocationVerified?: (isInside: boolean, coords?: { lat: number, lon: number }) => void;
